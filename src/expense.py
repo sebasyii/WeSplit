@@ -4,7 +4,6 @@ class Expense:
         if not description:
             raise ValueError("Description cannot be empty")
 
-        # Validate amount
         if not isinstance(amount, (int, float)) or amount <= 0:
             raise ValueError("Amount must be a positive number")
 
@@ -36,34 +35,11 @@ class Expense:
         self.split_type = split_type
         self.split_details = split_details
 
-    # def add_participant(self, user_id):
-    #     # Validate user ID
-    #     if not user_id:
-    #         raise ValueError("User ID cannot be empty")
+    def update_split_amount(self, user_id, new_split_amount):
+        if not isinstance(new_split_amount, (int, float)) or new_split_amount <= 0:
+            raise ValueError("New split amount must be a positive number")
 
-    #     # Validate split amount
-    #     if not isinstance(split_amount, (int, float)) or split_amount <= 0:
-    #         raise ValueError("Split amount must be a positive number")
+        if user_id not in self.split_details:
+            raise ValueError("User is not a participant")
 
-    #     # Check if user is already a participant
-    #     if user_id in self.split_amounts:
-    #         raise ValueError("User is already a participant")
-
-    #     # Update split amounts
-    #     self.split_amounts[user_id] = split_amount
-
-    # def update_split_amount(self, user_id, new_split_amount):
-    #     # Validate user ID
-    #     if not user_id:
-    #         raise ValueError("User ID cannot be empty")
-
-    #     # Validate new split amount
-    #     if not isinstance(new_split_amount, (int, float)) or new_split_amount <= 0:
-    #         raise ValueError("New split amount must be a positive number")
-
-    #     # Check if user is a participant
-    #     if user_id not in self.split_amounts:
-    #         raise ValueError("User is not a participant")
-
-    #     # Update split amounts
-    #     self.split_amounts[user_id] = new_split_amount
+        self.split_details[user_id] = new_split_amount

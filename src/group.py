@@ -33,6 +33,7 @@ class Group:
                 new_data.append([expense.paid_by.id, id, amount])
         return new_data
     
+    # https://github.com/nishasinha/Splitwise-Python/blob/master/src/splitwise.py
     def calulate_min_transfers(self, data):
         balance = defaultdict(int)
 
@@ -41,5 +42,36 @@ class Group:
             balance[from_person] -= amount
             balance[to_person] += amount
 
+        # Categorise users into lenders and borrowers
+        lenders = {} #owed money
+        borrowers = {} #owe money
+
+        for person, amount in balance.items():
+            if amount > 0:
+                lenders[person] = amount
+            elif amount < 0:
+                borrowers[person] = amount
+
+        transactions = []
+
+        # Match borrowers with lenders
+        for borrower, borrowed_amt in borrowers.items():
+            print(borrower, borrowed_amt)
+            abs_borrowed_amt = round(abs(borrowed_amt), 2)
+            while abs_borrowed_amt > 0:
+                # Get Lender with the highest amount
+                lender = max(lenders, key=lenders.get) 
+                
+                # get lender
+                lenders_amt = lenders[lender]
+                amt_to_pay = lenders_amt if lenders_amt < abs_borrowed_amt else abs_borrowed_amt
+
+                # Update the lender and borrower amounts
+                lenders[lender] -= amt_to_pay
+                borrowers[borrower] += amt_to_pay
+                abs_borrowed_amt -= amt_to_pay
+
+                # Add transaction
+                transactions.append([borrower, lender, amt_to_pay])
         
-    
+        return transactions

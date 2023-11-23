@@ -28,6 +28,7 @@ def test():
     g.add_expense(expense3)
 
     print(g.shape_data())
+    print(g.calulate_min_transfers(g.shape_data()))
 
 if __name__ == "__main__":
     test()
