@@ -1,0 +1,36 @@
+from typing import TypedDict
+
+from .root import App
+from .home import HomeView
+from .create_expense import CreateExpenseView
+from .create_group import CreateGroupView
+from .group import GroupView
+
+
+class Frames(TypedDict):
+    home: HomeView
+    create_expense: CreateExpenseView
+    create_group: CreateGroupView
+    group: GroupView
+
+
+class View:
+    def __init__(self):
+        self.root = App("WeSplit", (800, 600))
+        self.frames: Frames = {}
+
+        self._add_frame(CreateExpenseView, "create_expense")
+        self._add_frame(CreateGroupView, "create_group")
+        self._add_frame(GroupView, "group")
+        self._add_frame(HomeView, "home")
+
+    def _add_frame(self, Frame, name: str) -> None:
+        self.frames[name] = Frame(self.root)
+        self.frames[name].place(relwidth=1, relheight=1)
+
+    def switch(self, name) -> None:
+        frame = self.frames[name]
+        frame.tkraise()
+
+    def start_mainloop(self) -> None:
+        self.root.mainloop()

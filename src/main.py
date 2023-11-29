@@ -1,14 +1,13 @@
-from tkinter import Tk
-from app import App
-
-from typing import List
-
-from group import Group
-from expense import Expense
+from controller.main import Controller
+from models.main import Model
+from views.main import View
 
 
 def main():
-    App("WeSplit", (800, 600), groups=[])
+    model = Model()
+    view = View()
+    controller = Controller(model, view)
+    controller.start()
 
 
 if __name__ == "__main__":
