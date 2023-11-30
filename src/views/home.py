@@ -8,10 +8,9 @@ class HomeView(BaseView):
         super().__init__(*args, **kwargs)
 
         BaseView.configure_grid(self, 12, 10)
-        self.create_widgets()
+        self._create_widgets()
 
-    def create_widgets(self):
-        """Create and place widgets for MainFrame."""
+    def _create_widgets(self):
         self.create_grp_btn = ttk.Button(self, text="Create Group")
         self.select_grp_btn = ttk.Button(self, text="Select Group")
         self.leave_grp_btn = ttk.Button(self, text="Leave Group")

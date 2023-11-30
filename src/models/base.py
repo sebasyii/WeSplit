@@ -5,7 +5,8 @@ Self = TypeVar("Self", bound="ObservableModel")
 
 
 class ObservableModel:
-    """Models that can have event listeners.
+    """
+    Models that can have event listeners.
 
     Observable models can register callback functions for specific events.
     When any data changes, relavent events can be triggered.
@@ -17,7 +18,8 @@ class ObservableModel:
         self._event_listeners: dict[str, list[Callable[[Any], None]]] = {}
 
     def add_event_listener(self, event: str, fn: Callable[[Self], None]) -> Callable:
-        """Registers event callback functions.
+        """
+        Registers event callback functions.
 
         Adds a callback function to the list of listeners of the specified event and
         returns a function that removes the listener from the list.

@@ -7,9 +7,9 @@ class CreateExpenseView(BaseView):
         super().__init__(*args, **kwargs)
 
         BaseView.configure_grid(self, 12, 10)
-        self.create_widgets()
+        self._create_widgets()
 
-    def create_widgets(self):
+    def _create_widgets(self):
         self.back_button = ttk.Button(self, text="Back")
         self.back_button.grid(row=0, column=0, sticky="ew", padx=20, pady=10)
 
@@ -41,7 +41,7 @@ class CreateExpenseView(BaseView):
         self.members_split_entries_container.grid(
             row=5, rowspan=9, column=1, columnspan=5, sticky="nsew", padx=20, pady=10
         )
-        # configure
+
         BaseView.configure_grid(self.members_split_entries_container, 12, 10)
 
         self.record_expense_button = ttk.Button(self, text="Record Expense")

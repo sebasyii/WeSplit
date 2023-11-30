@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 from .user import User
 from .group import Group
 from .base import ObservableModel
@@ -19,21 +19,17 @@ class Model(ObservableModel):
         self.groups[0].add_member(User("Peng Siang"))
         self.groups[0].add_member(User("Roger"))
         self.groups[0].add_member(User("Zhan Yue"))
-        self.current_group: Union[Group, None] = None
+
+        self.current_group: Optional[Group] = None
 
     def set_current_group(self, group_id: int) -> None:
-        try:
-            self.current_group = self.groups[group_id]
-            self.trigger_event("group_selected")
-        except KeyError as e:
-            raise KeyError(f"Group with ID {group_id} not found in the model.") from e
+        self._validate_group_id(group_id)
+        self.current_group = self.groups[group_id]
+        self.trigger_event("group_selected")
 
     def add_expense_to_group(self, group_id: int, expense: Expense) -> None:
-        try:
-            selected_group = self.groups[group_id]
-            selected_group.add_expense(expense)
-        except KeyError as e:
-            raise KeyError(f"Group with ID {group_id} not found in the model.") from e
+        self._validate_group_id(group_id)
+        self.groups[group_id].add_expense(expense)
 
     def clear_current_group(self) -> None:
         self.current_group = None
@@ -41,16 +37,17 @@ class Model(ObservableModel):
     def add_group(self, group: Group) -> None:
         self.groups[group.id] = group
 
-    def remove_group(self, id: int) -> None:
-        try:
-            del self.groups[id]
-        except KeyError as e:
-            raise KeyError(f"Group with ID {id} not found in the model.") from e
+    def remove_group(self, group_id: int) -> None:
+        self._validate_group_id(group_id)
+        del self.groups[group_id]
 
-    def edit_group(self, id: int, group_name: str, group_description: str) -> None:
-        try:
-            self.groups[id].group_name = group_name
-            self.groups[id].group_description = group_description
-            self.groups[id].trigger_event("group_updated")
-        except KeyError as e:
-            raise KeyError(f"Group with ID {id} not found in the model.") from e
+    def edit_group(self, group_id: int, group_name: str, group_description: str) -> None:
+        self._validate_group_id(group_id)
+        group = self.groups[group_id]
+        group.group_name = group_name
+        group.group_description = group_description
+        group.trigger_event("group_updated")
+
+    def _validate_group_id(self, group_id: int) -> None:
+        if group_id not in self.groups:
+            raise KeyError(f"Group with ID {group_id} not found.")

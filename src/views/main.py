@@ -1,5 +1,6 @@
-from typing import TypedDict
+from typing import Type, TypedDict
 
+from .base import BaseView
 from .root import App
 from .home import HomeView
 from .create_expense import CreateExpenseView
@@ -24,11 +25,11 @@ class View:
         self._add_frame(GroupView, "group")
         self._add_frame(HomeView, "home")
 
-    def _add_frame(self, Frame, name: str) -> None:
+    def _add_frame(self, Frame: Type[BaseView], name: str) -> None:
         self.frames[name] = Frame(self.root)
         self.frames[name].place(relwidth=1, relheight=1)
 
-    def switch(self, name) -> None:
+    def switch(self, name: str) -> None:
         frame = self.frames[name]
         frame.tkraise()
 

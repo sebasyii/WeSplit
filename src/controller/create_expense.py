@@ -1,10 +1,8 @@
-from decimal import ROUND_DOWN, ROUND_HALF_DOWN, ROUND_UP, Decimal
-import math
-from tkinter import BooleanVar, DoubleVar, IntVar, messagebox
-from tkinter import ttk
+from decimal import ROUND_DOWN, ROUND_UP, Decimal
+from tkinter import BooleanVar, messagebox, ttk
 from views.main import View
 from models.main import Model
-from models.expense import Expense
+from models.expense import Expense, SplitType
 
 
 class CreateExpenseController:
@@ -15,77 +13,114 @@ class CreateExpenseController:
 
         self.temp_checkboxes = []
 
-        self._setup()
+        self._setup_event_bindings()
 
-    def _setup(self):
-        self.frame.record_expense_button.config(command=self.record_expense)
-        self.frame.back_button.config(command=self.cancel)
-        self.frame.split_type_combobox.bind("<<ComboboxSelected>>", self.on_split_type_changed)
+    def _setup_event_bindings(self):
+        self.frame.record_expense_button.config(command=self._record_expense)
+        self.frame.back_button.config(command=self._cancel)
+        self.frame.split_type_combobox.bind("<<ComboboxSelected>>", self._on_split_type_changed)
 
-    def on_split_type_changed(self, event):
+    def _on_split_type_changed(self, event):
         split_type = self.frame.split_type_combobox.get()
         if split_type == "Equal":
-            self.generate_checkboxes(equal_split=True)
+            self._generate_checkboxes(equal_split=True)
         else:
-            self.generate_checkboxes(equal_split=False)
+            self._generate_checkboxes(equal_split=False)
 
-    def generate_checkboxes(self, equal_split=False):
+    def _generate_checkboxes(self, equal_split=False):
         self.temp_checkboxes.clear()
-        for widget in self.frame.members_split_entries_container.winfo_children():
-            widget.destroy()
+        self._clear_member_entries()
 
-        self.member_vars = {}
-        self.member_entries = []
+        self.member_vars, self.member_entries = {}, []
+
         for idx, member in enumerate(self.model.current_group.members.values()):
-            var = BooleanVar(value=True)  # Pre-check the checkboxes
-            chk = ttk.Checkbutton(self.frame.members_split_entries_container, text=member.name, variable=var, padding=5)
+            var, chk = self._create_member_checkbox(member, idx, equal_split)
             self.temp_checkboxes.append((chk, var))
-            chk.grid(row=idx, sticky="ew")
-            self.member_vars[member.id] = var
 
-            if not equal_split:
-                entry = ttk.Entry(self.frame.members_split_entries_container, width=5)
-                entry.grid(row=idx, column=1, columnspan=11, sticky="ew")
-                self.member_entries.append((member, entry))
-
-    def clear_checkboxes(self):
+    def _clear_member_entries(self):
         for widget in self.frame.members_split_entries_container.winfo_children():
             widget.destroy()
 
-    def record_expense(self):
-        amount = self.frame.amount_entry.get()
-        description = self.frame.description_entry.get()
+    def _create_member_checkbox(self, member, idx, equal_split):
+        var = BooleanVar(value=True)
+        chk = ttk.Checkbutton(self.frame.members_split_entries_container, text=member.name, variable=var, padding=5)
+        chk.grid(row=idx, sticky="ew")
+        self.member_vars[member.id] = var
+
+        if not equal_split:
+            entry = ttk.Entry(self.frame.members_split_entries_container, width=5)
+            entry.grid(row=idx, column=1, columnspan=11, sticky="ew")
+            self.member_entries.append((member, entry))
+
+        return var, chk
+
+    def _record_expense(self):
+        amount, description, paid_by = self._get_expense_details()
         split_type = self.frame.split_type_combobox.get()
-        paid_by = self.frame.paid_by_combobox.get()
 
         paid_by = next((member for member in self.model.current_group.members.values() if member.name == paid_by), None)
 
+        if not self._validate_expense_input(amount, description, paid_by, split_type):
+            return
+
+        split_details = self._calculate_splits(amount, split_type)
+
+        if not split_details:
+            return
+
+        new_expense = Expense(description, amount, paid_by, split_type, split_details)
+
+        # Print all the new expense details
+        print("--------------------")
+        print("Description:", new_expense.description)
+        print("Amount:", new_expense.amount)
+        print("Paid By:", new_expense.paid_by.name)
+        print("Split Type:", new_expense.split_type)
+        print("Split Details:", new_expense.split_details)
+        print("--------------------")
+
+        self.model.add_expense_to_group(self.model.current_group.id, new_expense)
+
+        self._clear_expense_entries()
+        self.model.trigger_event("created_expense")
+        self.view.switch("group")
+
+    def _validate_expense_input(self, amount, description, paid_by, split_type):
         if not amount or not description or not split_type or not paid_by:
             messagebox.showerror(title="Error", message="Please fill all fields.")
-            return
+            return False
 
         try:
             amount = Decimal(amount)
         except ValueError:
             messagebox.showerror(title="Error", message="Invalid amount.")
-            return
+            return False
 
         # Check if the amount is greater than 0
         if amount <= 0:
             messagebox.showerror(title="Error", message="Amount must be greater than 0.")
-            return
+            return False
 
         # check if amount input is in 2d.p
         if amount != round(amount, 2):
             messagebox.showerror(title="Error", message="Amount must be in 2 decimal places.")
-            return
+            return False
 
         # check if there is at least one checked member
         if not any(var.get() for var in self.member_vars.values()):
             messagebox.showerror(title="Error", message="Please select at least one member.")
-            return
+            return False
 
-        # Main split amount
+        return True
+
+    def _get_expense_details(self):
+        amount = self.frame.amount_entry.get()
+        description = self.frame.description_entry.get()
+        paid_by = self.frame.paid_by_combobox.get()
+
+        return Decimal(amount), description, paid_by
+
+    def _calculate_splits(self, amount, split_type):
         split_details = {}
 
         if split_type == "Equal":
@@ -113,6 +148,7 @@ class CreateExpenseController:
                     except ValueError:
                         messagebox.showerror(title="Error", message="Invalid amount for " + member.name)
                         return
+            print(total_input_amount, amount)
             if total_input_amount != amount:
                 messagebox.showerror(title="Error", message="Total input amount does not match the total amount.")
                 return
@@ -126,6 +162,8 @@ class CreateExpenseController:
                     )
                     try:
                         member_percentage = Decimal(entry.get())
+                        if member_percentage == 0:
+                            continue
                         if (
                             member_percentage < 0
                             or member_percentage > 100
@@ -167,35 +205,21 @@ class CreateExpenseController:
                 messagebox.showerror(title="Error", message="Total input amount does not match the total amount.")
                 return
 
-        new_expense = Expense(description, amount, paid_by, split_type, split_details)
+        return split_details
 
-        # Print all the new expense details
-        print("--------------------")
-        print("Description:", new_expense.description)
-        print("Amount:", new_expense.amount)
-        print("Paid By:", new_expense.paid_by.name)
-        print("Split Type:", new_expense.split_type)
-        print("Split Details:", new_expense.split_details)
-        print("--------------------")
-
-        self.model.add_expense_to_group(self.model.current_group.id, new_expense)
-
-        # Clear the entries
+    def _clear_expense_entries(self):
         self.frame.amount_entry.delete(0, "end")
         self.frame.description_entry.delete(0, "end")
         self.frame.paid_by_combobox.set("")
         self.temp_checkboxes.clear()
 
-        self.model.trigger_event("created_expense")
-        self.view.switch("group")
-
-    def cancel(self):
+    def _cancel(self):
         self.view.switch("group")
 
     def update_view(self):
         members = self.model.current_group.members
-        self.frame.paid_by_combobox["values"] = tuple(members.values())
-        self.on_split_type_changed(None)
+        self.frame.paid_by_combobox["values"] = tuple(member.name for member in members.values())
+        self._on_split_type_changed(None)
 
     # Private methods
     def _split_amount(self, total_amount: str, num_members: int):

@@ -7,36 +7,38 @@ class HomeController:
         self.model = model
         self.view = view
         self.frame = self.view.frames["home"]
-        self._setup()
+        self._setup_event_bindings()
 
-    def _setup(self):
-        self.frame.create_grp_btn.config(command=self.create_group)
-        self.frame.select_grp_btn.config(command=self.select_group)
-        self.frame.leave_grp_btn.config(command=self.leave_group)
+    def _setup_event_bindings(self) -> None:
+        self.frame.create_grp_btn.config(command=self._create_group)
+        self.frame.select_grp_btn.config(command=self._select_group)
+        self.frame.leave_grp_btn.config(command=self._leave_group)
 
     # View methods
-    def create_group(self):
+    def _create_group(self):
         self.model.trigger_event("edit_group_page_loaded")
         self.view.switch("create_group")
 
-    def select_group(self):
-        selected = self.frame.groups_listbox.curselection()
-        if selected:
-            group_id = selected[0]
-            selected_group = list(self.model.groups.keys())[group_id]
+    def _select_group(self):
+        selected_group = self._get_selected_group_id()
+        if selected_group is not None:
             self.model.set_current_group(self.model.groups[selected_group].id)
             self.model.trigger_event("group_selected")
             self.view.switch("group")
 
-    def leave_group(self):
-        selected = self.frame.groups_listbox.curselection()
-        if selected:
-            group_id = selected[0]
-            selected_group = list(self.model.groups.keys())[group_id]
+    def _leave_group(self):
+        selected_group = self._get_selected_group_id()
+        if selected_group:
             self.model.remove_group(self.model.groups[selected_group].id)
             self.model.trigger_event("group_left")
+
+    def _get_selected_group_id(self) -> int:
+        selected = self.frame.groups_listbox.curselection()
+        if selected:
+            return list(self.model.groups.keys())[selected[0]]
+        return None
 
     def update_view(self):
         self.frame.groups_listbox.delete(0, "end")
         for group in self.model.groups.values():
-            self.frame.groups_listbox.insert("end", group.group_name)
+            self.frame.groups_listbox.insert("end", group.name)

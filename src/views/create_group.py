@@ -8,10 +8,9 @@ class CreateGroupView(BaseView):
         super().__init__(*args, **kwargs)
 
         BaseView.configure_grid(self, 12, 10)
-        self.create_widgets()
+        self._create_widgets()
 
-    def create_widgets(self):
-        """Creates and arranges widgets for group creation."""
+    def _create_widgets(self):
         self.back_btn = ttk.Button(self, text="Back")
 
         self.group_name_label = ttk.Label(self, text="Group Name")
