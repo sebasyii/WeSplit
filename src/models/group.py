@@ -22,7 +22,7 @@ class Group:
     @property
     def id(self) -> int:
         return self.group_id
-    
+
     @property
     def name(self) -> str:
         return self.group_name
@@ -41,7 +41,7 @@ class Group:
 
     def update_members(self, members: Dict[int, User]) -> None:
         self.members = members
-    
+
     def add_member(self, member: User) -> None:
         self.members[member.id] = member
 

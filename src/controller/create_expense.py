@@ -6,6 +6,7 @@ from views.main import View
 from models.main import Model
 from models.expense import Expense
 
+
 class CreateExpenseController:
     def __init__(self, model: Model, view: View):
         self.view = view
@@ -29,7 +30,7 @@ class CreateExpenseController:
             self.generate_checkboxes(equal_split=False)
 
     def generate_checkboxes(self, equal_split=False):
-        # Clear any existing checkboxes
+        self.temp_checkboxes.clear()
         for widget in self.frame.members_split_entries_container.winfo_children():
             widget.destroy()
 
@@ -62,29 +63,28 @@ class CreateExpenseController:
         if not amount or not description or not split_type or not paid_by:
             messagebox.showerror(title="Error", message="Please fill all fields.")
             return
-        
-        # Check if the amount is a valid number
+
         try:
-            amount = float(amount)
+            amount = Decimal(amount)
         except ValueError:
             messagebox.showerror(title="Error", message="Invalid amount.")
             return
-        
+
         # Check if the amount is greater than 0
         if amount <= 0:
             messagebox.showerror(title="Error", message="Amount must be greater than 0.")
             return
-        
+
         # check if amount input is in 2d.p
         if amount != round(amount, 2):
             messagebox.showerror(title="Error", message="Amount must be in 2 decimal places.")
             return
-        
+
         # check if there is at least one checked member
         if not any(var.get() for var in self.member_vars.values()):
             messagebox.showerror(title="Error", message="Please select at least one member.")
             return
-        
+
         # Main split amount
         split_details = {}
 
@@ -95,16 +95,81 @@ class CreateExpenseController:
             for member, (chk, var) in zip(self.model.current_group.members.values(), self.temp_checkboxes):
                 if var.get():
                     split_details[member] = splits.pop(0)
-            
+
         elif split_type == "Exact Amounts":
             total_input_amount = 0
-            
+
+            for member, (chk, var) in zip(self.model.current_group.members.values(), self.temp_checkboxes):
+                if var.get():
+                    entry = next(
+                        (entry for member_entry, entry in self.member_entries if member_entry.id == member.id), None
+                    )
+                    try:
+                        member_amount = Decimal(entry.get())
+                        if member_amount < 0 or member_amount != round(member_amount, 2):
+                            raise ValueError
+                        total_input_amount += member_amount
+                        split_details[member] = member_amount
+                    except ValueError:
+                        messagebox.showerror(title="Error", message="Invalid amount for " + member.name)
+                        return
+            if total_input_amount != amount:
+                messagebox.showerror(title="Error", message="Total input amount does not match the total amount.")
+                return
         elif split_type == "Percentages":
             total_percentage = 0
-            
+            total_input_amount = 0
+            for member, (chk, var) in zip(self.model.current_group.members.values(), self.temp_checkboxes):
+                if var.get():
+                    entry = next(
+                        (entry for member_entry, entry in self.member_entries if member_entry.id == member.id), None
+                    )
+                    try:
+                        member_percentage = Decimal(entry.get())
+                        if (
+                            member_percentage < 0
+                            or member_percentage > 100
+                            or member_percentage != round(member_percentage, 2)
+                        ):
+                            raise ValueError
+                        total_percentage += member_percentage
+
+                        member_amount = ((member_percentage / 100) * amount).quantize(
+                            Decimal(".01"), rounding=ROUND_DOWN
+                        )
+                        total_input_amount += member_amount
+
+                        split_details[member] = member_amount
+                    except ValueError:
+                        messagebox.showerror(title="Error", message="Invalid percentage for " + member.name)
+                        return
+
+            remainder = amount - total_input_amount
+
+            temp_idx = 0
+            while remainder >= Decimal("0.01"):
+                split_details[list(split_details.keys())[temp_idx]] += Decimal(".01")
+                remainder -= Decimal(".01")
+                temp_idx += 1
+                temp_idx %= len(split_details)
+
+                total_input_amount += Decimal(".01")
+
+            split_details[list(split_details.keys())[temp_idx]] = (
+                split_details[list(split_details.keys())[temp_idx]] + remainder
+            ).quantize(Decimal(".01"), rounding=ROUND_UP)
+
+            if total_percentage != 100:
+                messagebox.showerror(title="Error", message="Total percentage does not equal 100%.")
+                return
+
+            if total_input_amount != amount:
+                messagebox.showerror(title="Error", message="Total input amount does not match the total amount.")
+                return
+
         new_expense = Expense(description, amount, paid_by, split_type, split_details)
 
-         # Print all the new expense details
+        # Print all the new expense details
         print("--------------------")
         print("Description:", new_expense.description)
         print("Amount:", new_expense.amount)
@@ -119,10 +184,10 @@ class CreateExpenseController:
         self.frame.amount_entry.delete(0, "end")
         self.frame.description_entry.delete(0, "end")
         self.frame.paid_by_combobox.set("")
+        self.temp_checkboxes.clear()
 
-        self.model.trigger_event('created_expense')
+        self.model.trigger_event("created_expense")
         self.view.switch("group")
-
 
     def cancel(self):
         self.view.switch("group")
@@ -132,24 +197,23 @@ class CreateExpenseController:
         self.frame.paid_by_combobox["values"] = tuple(members.values())
         self.on_split_type_changed(None)
 
-
     # Private methods
     def _split_amount(self, total_amount: str, num_members: int):
         amount = Decimal(total_amount)
         split_amount_precise = amount / num_members
-        split_amount = split_amount_precise.quantize(Decimal('.01'), rounding=ROUND_DOWN)
+        split_amount = split_amount_precise.quantize(Decimal(".01"), rounding=ROUND_DOWN)
 
         total_allocated = split_amount * num_members
         remainder = amount - total_allocated
-        
+
         splits = [split_amount for _ in range(num_members)]
         temp_idx = 0
-        while remainder >= Decimal('0.01'):
-            splits[temp_idx] += Decimal('.01')  
-            remainder -= Decimal('.01')
-            temp_idx += 1 
+        while remainder >= Decimal("0.01"):
+            splits[temp_idx] += Decimal(".01")
+            remainder -= Decimal(".01")
+            temp_idx += 1
             temp_idx %= num_members
 
-        splits[temp_idx] = (splits[temp_idx] + remainder).quantize(Decimal('.01'), rounding=ROUND_UP)
+        splits[temp_idx] = (splits[temp_idx] + remainder).quantize(Decimal(".01"), rounding=ROUND_UP)
 
         return splits

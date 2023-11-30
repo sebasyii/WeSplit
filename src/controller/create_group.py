@@ -25,7 +25,9 @@ class CreateGroupController:
         group_description = self.frame.group_description_entry.get()
 
         if self.model.current_group:
-            group = next((group for group in self.model.groups.values() if group.id == self.model.current_group.id), None)
+            group = next(
+                (group for group in self.model.groups.values() if group.id == self.model.current_group.id), None
+            )
             group.name = group_name
             group.description = group_description
             group.update_members({member.id: member for member in self.temp_members})
@@ -42,7 +44,6 @@ class CreateGroupController:
 
                 self.view.switch("group")
         self.temp_members.clear()  # Clear temporary members after group creation
-        
 
     def back(self):
         if self.model.current_group:

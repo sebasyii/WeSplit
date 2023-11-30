@@ -38,7 +38,9 @@ class CreateExpenseView(BaseView):
         self.paid_by_combobox.grid(row=4, column=1, sticky="ew", padx=20, pady=1)
 
         self.members_split_entries_container = Frame(self)
-        self.members_split_entries_container.grid(row=5, rowspan=9, column=1, columnspan=5, sticky="nsew", padx=20, pady=10)
+        self.members_split_entries_container.grid(
+            row=5, rowspan=9, column=1, columnspan=5, sticky="nsew", padx=20, pady=10
+        )
         # configure
         BaseView.configure_grid(self.members_split_entries_container, 12, 10)
 

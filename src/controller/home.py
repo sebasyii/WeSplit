@@ -16,7 +16,7 @@ class HomeController:
 
     # View methods
     def create_group(self):
-        self.model.trigger_event('edit_group_page_loaded')
+        self.model.trigger_event("edit_group_page_loaded")
         self.view.switch("create_group")
 
     def select_group(self):
@@ -25,7 +25,7 @@ class HomeController:
             group_id = selected[0]
             selected_group = list(self.model.groups.keys())[group_id]
             self.model.set_current_group(self.model.groups[selected_group].id)
-            self.model.trigger_event('group_selected')
+            self.model.trigger_event("group_selected")
             self.view.switch("group")
 
     def leave_group(self):
@@ -34,7 +34,7 @@ class HomeController:
             group_id = selected[0]
             selected_group = list(self.model.groups.keys())[group_id]
             self.model.remove_group(self.model.groups[selected_group].id)
-            self.model.trigger_event('group_left')
+            self.model.trigger_event("group_left")
 
     def update_view(self):
         self.frame.groups_listbox.delete(0, "end")

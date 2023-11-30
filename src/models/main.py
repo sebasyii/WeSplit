@@ -9,7 +9,11 @@ class Model(ObservableModel):
     def __init__(self) -> None:
         super().__init__()
         # Temp
-        self.groups = {0: Group("SUTD MAKAN GROUP", "Makan Group for the plebs"), 1: Group("Test Group 2", "This is another test group"), 2: Group("Test Group 3", "This is a third test group")}
+        self.groups = {
+            0: Group("SUTD MAKAN GROUP", "Makan Group for the plebs"),
+            1: Group("Test Group 2", "This is another test group"),
+            2: Group("Test Group 3", "This is a third test group"),
+        }
         self.groups[0].add_member(User("Sebastian"))
         self.groups[0].add_member(User("Zhao en"))
         self.groups[0].add_member(User("Peng Siang"))
@@ -23,14 +27,14 @@ class Model(ObservableModel):
             self.trigger_event("group_selected")
         except KeyError as e:
             raise KeyError(f"Group with ID {group_id} not found in the model.") from e
-        
+
     def add_expense_to_group(self, group_id: int, expense: Expense) -> None:
         try:
             selected_group = self.groups[group_id]
             selected_group.add_expense(expense)
         except KeyError as e:
             raise KeyError(f"Group with ID {group_id} not found in the model.") from e
-    
+
     def clear_current_group(self) -> None:
         self.current_group = None
 

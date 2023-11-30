@@ -13,18 +13,18 @@ class GroupController:
         self.frame.add_expense_button.config(command=self.add_expense)
         self.frame.edit_group_button.config(command=self.edit_group)
         self.frame.back_button.config(command=self.back)
-    
+
     def back(self):
-        self.model.trigger_event('deselect_group')
-        self.model.trigger_event('page_loaded')
+        self.model.trigger_event("deselect_group")
+        self.model.trigger_event("page_loaded")
         self.view.switch("home")
 
     def add_expense(self):
-        self.model.trigger_event('create_expense_page_loaded')
+        self.model.trigger_event("create_expense_page_loaded")
         self.view.switch("create_expense")
 
     def edit_group(self):
-        self.model.trigger_event('edit_group_page_loaded')
+        self.model.trigger_event("edit_group_page_loaded")
         self.view.switch("create_group")
 
     def update_view(self):

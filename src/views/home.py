@@ -9,7 +9,7 @@ class HomeView(BaseView):
 
         BaseView.configure_grid(self, 12, 10)
         self.create_widgets()
-        
+
     def create_widgets(self):
         """Create and place widgets for MainFrame."""
         self.create_grp_btn = ttk.Button(self, text="Create Group")
