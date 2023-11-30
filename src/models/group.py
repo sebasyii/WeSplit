@@ -42,7 +42,7 @@ class Group:
     @property
     def members(self) -> Dict[int, User]:
         return self._members
-    
+
     @property
     def expenses(self) -> List[Expense]:
         return self._expenses

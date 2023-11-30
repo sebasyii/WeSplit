@@ -34,27 +34,27 @@ class Expense:
     @property
     def id(self) -> int:
         return self._id
-    
+
     @property
     def description(self) -> str:
         return self._description
-    
+
     @property
     def amount(self) -> Decimal:
         return self._amount
-    
+
     @property
     def paid_by(self) -> User:
         return self._paid_by
-    
+
     @property
     def split_type(self) -> SplitType:
         return self._split_type
-    
+
     @property
     def split_details(self) -> Dict[User, Decimal]:
         return self._split_details
-    
+
     @description.setter
     def description(self, description: str) -> None:
         self._description = description
@@ -66,7 +66,7 @@ class Expense:
     @paid_by.setter
     def paid_by(self, paid_by: User) -> None:
         self._paid_by = paid_by
-    
+
     @split_type.setter
     def split_type(self, split_type: SplitType) -> None:
         self._split_type = split_type
@@ -78,17 +78,11 @@ class Expense:
     def to_csv_row(self) -> str:
         split_details_str = ""
         if self.split_type == "Equal":
-            split_details_str = ",".join(
-                f"{user.name}:{amount}" for user, amount in self.split_details.items()
-            )
+            split_details_str = ",".join(f"{user.name}:{amount}" for user, amount in self.split_details.items())
         elif self.split_type == "Exact Amounts":
-            split_details_str = ",".join(
-                f"{user.name}:{amount}" for user, amount in self.split_details.items()
-            )
+            split_details_str = ",".join(f"{user.name}:{amount}" for user, amount in self.split_details.items())
         elif self.split_type == "Percentages":
-            split_details_str = ",".join(
-                f"{user.name}:{amount}%" for user, amount in self.split_details.items()
-            )
+            split_details_str = ",".join(f"{user.name}:{amount}%" for user, amount in self.split_details.items())
         else:
             raise ValueError(f"Invalid split type: {self.split_type}")
 
