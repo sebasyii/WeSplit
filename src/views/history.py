@@ -15,14 +15,18 @@ class HistoryView(BaseView):
 
         self.back_button.grid(column=0, row=0, padx=20, pady=10, columnspan=2, sticky=tk.EW)
 
-        self.history_table = ttk.Treeview(self, columns=("owes", "amount"))
+        self.history_table = ttk.Treeview(self, columns=("amount", "total_amount", "description", "category"))
 
-        self.history_table.column("#0", width=120, minwidth=25, anchor=tk.W)
-        self.history_table.column("owes", width=120, anchor=tk.CENTER)
-        self.history_table.column("amount", width=120, anchor=tk.E)
+        self.history_table.column("#0", minwidth=25, width=60, anchor=tk.CENTER)
+        self.history_table.column("amount", width=60, anchor=tk.CENTER)
+        self.history_table.column("total_amount", width=60, anchor=tk.CENTER)
+        self.history_table.column("description", width=120, anchor=tk.CENTER)
+        self.history_table.column("category", width=100, anchor=tk.CENTER)
 
-        self.history_table.heading("#0", text="Name", anchor=tk.W)
-        self.history_table.heading("owes", text="Owe", anchor=tk.CENTER)
-        self.history_table.heading("amount", text="Amount", anchor=tk.E)
+        self.history_table.heading("#0", text="Paid By", anchor=tk.CENTER)
+        self.history_table.heading("amount", text="Amount", anchor=tk.CENTER)
+        self.history_table.heading("total_amount", text="Total Amount", anchor=tk.CENTER)
+        self.history_table.heading("description", text="Description", anchor=tk.CENTER)
+        self.history_table.heading("category", text="Category", anchor=tk.CENTER)
 
         self.history_table.grid(row=2, rowspan=10, column=0, columnspan=12, sticky="nsew", padx=20, pady=20)

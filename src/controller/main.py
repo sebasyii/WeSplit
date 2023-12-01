@@ -31,6 +31,7 @@ class Controller:
             "created_group": self.on_group_selected,
             "created_expense": self.on_expense_created,
             "export_transactions_to_csv": self.export_transactions_to_csv,
+            "history_page_loaded": self.on_history_page_loaded,
         }
 
         for event, handler in event_listeners.items():
@@ -38,6 +39,9 @@ class Controller:
 
     def on_page_loaded(self, _):
         self.home_controller.update_view()
+
+    def on_history_page_loaded(self, _):
+        self.history_controller.update_view()
 
     def on_group_selected(self, _):
         self.group_controller.update_view()

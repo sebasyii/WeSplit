@@ -18,6 +18,7 @@ class Expense:
         self,
         description: str,
         amount: float,
+        category: str,
         paid_by: User,
         split_type: SplitType,
         split_details: Dict[User, Decimal],
@@ -28,6 +29,7 @@ class Expense:
         self._description: str = description
         self._amount: Decimal = Decimal(amount)
         self._paid_by: User = paid_by
+        self._category: str = category
         self._split_type: SplitType = split_type
         self._split_details: Dict[User, Decimal] = split_details
 
@@ -42,6 +44,10 @@ class Expense:
     @property
     def amount(self) -> Decimal:
         return self._amount
+    
+    @property
+    def category(self) -> str:
+        return self._category
 
     @property
     def paid_by(self) -> User:
@@ -67,6 +73,10 @@ class Expense:
     def paid_by(self, paid_by: User) -> None:
         self._paid_by = paid_by
 
+    @category.setter
+    def category(self, category: str) -> None:
+        self._category = category
+
     @split_type.setter
     def split_type(self, split_type: SplitType) -> None:
         self._split_type = split_type
@@ -89,4 +99,4 @@ class Expense:
         return f"{self.description},{self.amount},{self.paid_by.name},{self.split_type},{split_details_str}"
 
     def __str__(self) -> str:
-        return f"Expense: {self.description}, Amount: {self.amount}, Paid By: {self.paid_by}, Split Type: {self.split_type.name}"
+        return f"Expense: {self.description}, Amount: {self.amount}, Paid By: {self.paid_by}, Split Type: {self.split_type}"

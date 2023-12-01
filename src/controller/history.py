@@ -21,3 +21,15 @@ class HistoryController:
     def _go_back(self) -> None:
         # self.model.trigger_event("page_loaded")
         self.view.switch("group")
+
+    def _update_history_table(self) -> None:
+        self.frame.history_table.delete(*self.frame.history_table.get_children())
+
+        for expense in self.model.current_group.expenses:
+            parent_id = self.frame.history_table.insert("", "end", text=expense.paid_by.name, values=("", expense.amount, expense.description, expense.category))
+
+            for user, amount in expense.split_details.items():
+                self.frame.history_table.insert(parent_id, "end", text=user.name, values=(amount, ""))
+
+    def update_view(self) -> None:
+        self._update_history_table()

@@ -14,12 +14,16 @@ class GroupController:
         self.frame.edit_group_button.config(command=self._edit_group)
         self.frame.back_button.config(command=self._go_back)
         self.frame.export_expenses_button.config(command=self.export_transactions_to_csv)
-        self.frame.history_button.config(command=lambda: self.view.switch("history"))
+        self.frame.history_button.config(command=self._go_to_history)
 
     def _go_back(self):
         self.model.trigger_event("deselect_group")
         self.model.trigger_event("page_loaded")
         self.view.switch("home")
+
+    def _go_to_history(self):
+        self.model.trigger_event("history_page_loaded")
+        self.view.switch("history")
 
     def _add_expense(self):
         self.model.trigger_event("create_expense_page_loaded")
