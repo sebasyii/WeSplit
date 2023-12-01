@@ -6,6 +6,7 @@ from .home import HomeView
 from .create_expense import CreateExpenseView
 from .create_group import CreateGroupView
 from .group import GroupView
+from .history import HistoryView
 
 
 class Frames(TypedDict):
@@ -13,6 +14,7 @@ class Frames(TypedDict):
     create_expense: CreateExpenseView
     create_group: CreateGroupView
     group: GroupView
+    history: HistoryView
 
 
 class View:
@@ -23,6 +25,7 @@ class View:
         self._add_frame(CreateExpenseView, "create_expense")
         self._add_frame(CreateGroupView, "create_group")
         self._add_frame(GroupView, "group")
+        self._add_frame(HistoryView, "history")
         self._add_frame(HomeView, "home")
 
     def _add_frame(self, Frame: Type[BaseView], name: str) -> None:

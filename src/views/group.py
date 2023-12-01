@@ -12,6 +12,7 @@ class GroupView(BaseView):
 
     def _create_widgets(self):
         self.back_button = ttk.Button(self, text="Back")
+        self.history_button = ttk.Button(self, text="History")
         self.add_expense_button = ttk.Button(self, text="Add Expense")
         self.edit_group_button = ttk.Button(self, text="Edit Group")
 
@@ -19,7 +20,9 @@ class GroupView(BaseView):
         self.spending_breakdown_button = ttk.Button(self, text="📊 Spending Breakdown")
         self.export_expenses_button = ttk.Button(self, text="📤 Export Expenses")
 
-        self.back_button.grid(column=0, row=0, padx=20, pady=10, columnspan=4, sticky=tk.EW)
+        self.back_button.grid(column=0, row=0, padx=20, pady=10, columnspan=2, sticky=tk.EW)
+        self.history_button.grid(column=2, row=0, padx=20, pady=10, columnspan=2, sticky=tk.EW)
+
         self.add_expense_button.grid(column=4, row=0, padx=20, pady=10, columnspan=4, sticky=tk.EW)
         self.edit_group_button.grid(column=8, row=0, padx=20, pady=10, columnspan=4, sticky=tk.EW)
 

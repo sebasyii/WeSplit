@@ -7,6 +7,7 @@ from .home import HomeController
 from .create_group import CreateGroupController
 from .group import GroupController
 from .create_expense import CreateExpenseController
+from .history import HistoryController
 
 
 class Controller:
@@ -18,6 +19,7 @@ class Controller:
         self.create_group_controller = CreateGroupController(model, view)
         self.group_controller = GroupController(model, view)
         self.create_expense_controller = CreateExpenseController(model, view)
+        self.history_controller = HistoryController(model, view)
 
         event_listeners = {
             "group_selected": self.on_group_selected,
@@ -34,31 +36,31 @@ class Controller:
         for event, handler in event_listeners.items():
             self.model.add_event_listener(event, handler)
 
-    def on_page_loaded(self, data):
+    def on_page_loaded(self, _):
         self.home_controller.update_view()
 
-    def on_group_selected(self, data):
+    def on_group_selected(self, _):
         self.group_controller.update_view()
 
-    def on_group_left(self, data):
+    def on_group_left(self, _):
         self.home_controller.update_view()
 
-    def on_create_expense_page_loaded(self, data):
+    def on_create_expense_page_loaded(self, _):
         self.create_expense_controller.update_view()
 
-    def on_edit_group_page_loaded(self, data):
+    def on_edit_group_page_loaded(self, _):
         self.create_group_controller.update_view()
 
-    def on_deselect_group(self, data):
+    def on_deselect_group(self, _):
         self.model.clear_current_group()
 
-    def on_group_created(self, data):
+    def on_group_created(self, _):
         self.group_controller.update_view()
 
-    def on_expense_created(self, data):
+    def on_expense_created(self, _):
         self.group_controller.update_view()
 
-    def export_transactions_to_csv(self, data):
+    def export_transactions_to_csv(self, _):
         expenses_to_export = self.model.current_group.expenses
 
         filename = filedialog.asksaveasfilename(

@@ -1,4 +1,3 @@
-from tkinter import messagebox
 from views.main import View
 from models.main import Model
 
@@ -15,6 +14,7 @@ class GroupController:
         self.frame.edit_group_button.config(command=self._edit_group)
         self.frame.back_button.config(command=self._go_back)
         self.frame.export_expenses_button.config(command=self.export_transactions_to_csv)
+        self.frame.history_button.config(command=lambda: self.view.switch("history"))
 
     def _go_back(self):
         self.model.trigger_event("deselect_group")
@@ -31,7 +31,6 @@ class GroupController:
 
     def export_transactions_to_csv(self):
         self.model.trigger_event("export_transactions_to_csv")
-        messagebox.showinfo("Success", "Transactions exported")
 
     def _update_member_treeview(self, treeview_data):
         self.frame.member_tree.delete(*self.frame.member_tree.get_children())
