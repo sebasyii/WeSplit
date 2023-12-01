@@ -39,7 +39,7 @@ class Model(ObservableModel):
 
     def remove_group(self, group_id: int) -> None:
         self._validate_group_id(group_id)
-        del self.groups[group_id]
+        self.groups.pop(group_id)
 
     def edit_group(self, group_id: int, group_name: str, group_description: str) -> None:
         self._validate_group_id(group_id)

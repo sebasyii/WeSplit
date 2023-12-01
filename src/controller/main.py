@@ -61,7 +61,6 @@ class Controller:
     def export_transactions_to_csv(self, data):
         expenses_to_export = self.model.current_group.expenses
 
-        # Open tkinter file dialog to get the path to save the file
         filename = filedialog.asksaveasfilename(
             title="Export transactions to CSV",
             filetypes=(("CSV files", "*.csv"), ("All files", "*.*")),

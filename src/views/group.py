@@ -14,12 +14,18 @@ class GroupView(BaseView):
         self.back_button = ttk.Button(self, text="Back")
         self.add_expense_button = ttk.Button(self, text="Add Expense")
         self.edit_group_button = ttk.Button(self, text="Edit Group")
-        self.export_expenses_button = ttk.Button(self, text="Export Expenses")
+
+        self.hall_of_shame_button = ttk.Button(self, text="🙈 Hall of Shame 🙈")
+        self.spending_breakdown_button = ttk.Button(self, text="📊 Spending Breakdown")
+        self.export_expenses_button = ttk.Button(self, text="📤 Export Expenses")
 
         self.back_button.grid(column=0, row=0, padx=20, pady=10, columnspan=4, sticky=tk.EW)
         self.add_expense_button.grid(column=4, row=0, padx=20, pady=10, columnspan=4, sticky=tk.EW)
         self.edit_group_button.grid(column=8, row=0, padx=20, pady=10, columnspan=4, sticky=tk.EW)
 
+
+        self.hall_of_shame_button.grid(column=0, row=1, padx=20, pady=10, columnspan=4, sticky=tk.EW)
+        self.spending_breakdown_button.grid(column=4, row=1, padx=20, pady=10, columnspan=4, sticky=tk.EW)
         self.export_expenses_button.grid(column=8, row=1, padx=20, pady=10, columnspan=4, sticky=tk.EW)
 
         self.member_tree = ttk.Treeview(self, columns=("owes", "amount"))

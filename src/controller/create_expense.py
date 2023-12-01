@@ -1,8 +1,10 @@
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 from tkinter import BooleanVar, messagebox, ttk
+from typing import Optional
 from views.main import View
 from models.main import Model
-from models.expense import Expense, SplitType
+from models.expense import Expense
+from models.user import User
 
 
 class CreateExpenseController:
@@ -15,19 +17,19 @@ class CreateExpenseController:
 
         self._setup_event_bindings()
 
-    def _setup_event_bindings(self):
+    def _setup_event_bindings(self) -> None:
         self.frame.record_expense_button.config(command=self._record_expense)
         self.frame.back_button.config(command=self._cancel)
         self.frame.split_type_combobox.bind("<<ComboboxSelected>>", self._on_split_type_changed)
 
-    def _on_split_type_changed(self, event):
+    def _on_split_type_changed(self, _) -> None:
         split_type = self.frame.split_type_combobox.get()
         if split_type == "Equal":
             self._generate_checkboxes(equal_split=True)
         else:
             self._generate_checkboxes(equal_split=False)
 
-    def _generate_checkboxes(self, equal_split=False):
+    def _generate_checkboxes(self, equal_split=False) -> None:
         self.temp_checkboxes.clear()
         self._clear_member_entries()
 
@@ -37,11 +39,11 @@ class CreateExpenseController:
             var, chk = self._create_member_checkbox(member, idx, equal_split)
             self.temp_checkboxes.append((chk, var))
 
-    def _clear_member_entries(self):
+    def _clear_member_entries(self) -> None:
         for widget in self.frame.members_split_entries_container.winfo_children():
             widget.destroy()
 
-    def _create_member_checkbox(self, member, idx, equal_split):
+    def _create_member_checkbox(self, member: User, idx: int, equal_split: bool) -> tuple[BooleanVar, ttk.Checkbutton]:
         var = BooleanVar(value=True)
         chk = ttk.Checkbutton(self.frame.members_split_entries_container, text=member.name, variable=var, padding=5)
         chk.grid(row=idx, sticky="ew")
@@ -54,7 +56,7 @@ class CreateExpenseController:
 
         return var, chk
 
-    def _record_expense(self):
+    def _record_expense(self) -> None:
         amount, description, paid_by = self._get_expense_details()
         split_type = self.frame.split_type_combobox.get()
 
@@ -85,7 +87,7 @@ class CreateExpenseController:
         self.model.trigger_event("created_expense")
         self.view.switch("group")
 
-    def _validate_expense_input(self, amount, description, paid_by, split_type):
+    def _validate_expense_input(self, amount: Decimal, description: str, paid_by: Optional[User], split_type: str) -> bool:
         if not amount or not description or not split_type or not paid_by:
             messagebox.showerror(title="Error", message="Please fill all fields.")
             return False
@@ -113,14 +115,14 @@ class CreateExpenseController:
 
         return True
 
-    def _get_expense_details(self):
+    def _get_expense_details(self) -> tuple[Decimal, str, Optional[User]]:
         amount = self.frame.amount_entry.get()
         description = self.frame.description_entry.get()
         paid_by = self.frame.paid_by_combobox.get()
 
         return Decimal(amount), description, paid_by
 
-    def _calculate_splits(self, amount, split_type):
+    def _calculate_splits(self, amount, split_type) -> dict[User, Decimal]:
         split_details = {}
 
         if split_type == "Equal":
@@ -207,22 +209,22 @@ class CreateExpenseController:
 
         return split_details
 
-    def _clear_expense_entries(self):
+    def _clear_expense_entries(self) -> None:
         self.frame.amount_entry.delete(0, "end")
         self.frame.description_entry.delete(0, "end")
         self.frame.paid_by_combobox.set("")
         self.temp_checkboxes.clear()
 
-    def _cancel(self):
+    def _cancel(self) -> None:
         self.view.switch("group")
 
-    def update_view(self):
+    def update_view(self) -> None:
         members = self.model.current_group.members
         self.frame.paid_by_combobox["values"] = tuple(member.name for member in members.values())
         self._on_split_type_changed(None)
 
     # Private methods
-    def _split_amount(self, total_amount: str, num_members: int):
+    def _split_amount(self, total_amount: str, num_members: int) -> list[Decimal]:
         amount = Decimal(total_amount)
         split_amount_precise = amount / num_members
         split_amount = split_amount_precise.quantize(Decimal(".01"), rounding=ROUND_DOWN)

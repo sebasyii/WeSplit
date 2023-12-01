@@ -13,8 +13,8 @@ class HomeController:
         self.frame.create_grp_btn.config(command=self._create_group)
         self.frame.select_grp_btn.config(command=self._select_group)
         self.frame.leave_grp_btn.config(command=self._leave_group)
+        self.frame.groups_listbox.bind("<<ListboxSelect>>", lambda _: self._enable_group_modification_btn())
 
-    # View methods
     def _create_group(self):
         self.model.trigger_event("edit_group_page_loaded")
         self.view.switch("create_group")
@@ -28,7 +28,8 @@ class HomeController:
 
     def _leave_group(self):
         selected_group = self._get_selected_group_id()
-        if selected_group:
+        print(selected_group)
+        if selected_group is not None:
             self.model.remove_group(self.model.groups[selected_group].id)
             self.model.trigger_event("group_left")
 
@@ -37,6 +38,10 @@ class HomeController:
         if selected:
             return list(self.model.groups.keys())[selected[0]]
         return None
+    
+    def _enable_group_modification_btn(self):
+        self.frame.select_grp_btn.config(state="normal")
+        self.frame.leave_grp_btn.config(state="normal")
 
     def update_view(self):
         self.frame.groups_listbox.delete(0, "end")

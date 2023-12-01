@@ -31,7 +31,7 @@ class CreateGroupController:
     def _get_group_details(self):
         return self.frame.group_name_entry.get(), self.frame.group_description_entry.get()
 
-    def _update_existing_group(self, group_name, group_description):
+    def _update_existing_group(self, group_name: str, group_description: str) -> None:
         group = next((group for group in self.model.groups.values() if group.id == self.model.current_group.id), None)
         if group:
             group.name, group.description = group_name, group_description
@@ -39,7 +39,7 @@ class CreateGroupController:
             self.model.set_current_group(group.id)
             self.view.switch("group")
 
-    def _create_new_group(self, group_name, group_description):
+    def _create_new_group(self, group_name: str, group_description: str):
         new_group = Group(group_name, group_description)
         for member in self.temp_members:
             new_group.add_member(member)

@@ -12,8 +12,8 @@ class HomeView(BaseView):
 
     def _create_widgets(self):
         self.create_grp_btn = ttk.Button(self, text="Create Group")
-        self.select_grp_btn = ttk.Button(self, text="Select Group")
-        self.leave_grp_btn = ttk.Button(self, text="Leave Group")
+        self.select_grp_btn = ttk.Button(self, text="Select Group", state=tk.DISABLED)
+        self.leave_grp_btn = ttk.Button(self, text="Leave Group", state=tk.DISABLED)
 
         var = tk.Variable(value=[])
         self.groups_listbox = tk.Listbox(self, listvariable=var, height=5)
