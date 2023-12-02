@@ -45,5 +45,7 @@ class HomeController:
 
     def update_view(self):
         self.frame.groups_listbox.delete(0, "end")
+        self.frame.select_grp_btn.config(state="disabled")
+        self.frame.leave_grp_btn.config(state="disabled")
         for group in self.model.groups.values():
             self.frame.groups_listbox.insert("end", group.name)
