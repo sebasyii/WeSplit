@@ -8,23 +8,6 @@ from .expense import Expense
 class Model(ObservableModel):
     def __init__(self) -> None:
         super().__init__()
-        # Temp
-        self.groups = {
-            0: Group("SUTD MAKAN GROUP", "Makan Group for the plebs"),
-            1: Group("Test Group 2", "This is another test group"),
-            2: Group("Test Group 3", "This is a third test group"),
-        }
-        self.groups[0].add_member(User("Sebastian"))
-        self.groups[0].add_member(User("Zhao en"))
-        self.groups[0].add_member(User("Peng Siang"))
-        self.groups[0].add_member(User("Roger"))
-        self.groups[0].add_member(User("Zhan Yue"))
-
-        self.groups[0].add_expense(Expense("Food", 100, "Food", self.groups[0].members[0], "Equals", { self.groups[0].members[0]: 20, self.groups[0].members[1]: 20, self.groups[0].members[2]: 20, self.groups[0].members[3]: 20, self.groups[0].members[4]: 20 }))
-        self.groups[0].add_expense(Expense("Transportation", 150, "Transportation", self.groups[0].members[2], "Exact Amounts", { self.groups[0].members[0]: 20, self.groups[0].members[1]: 30, self.groups[0].members[2]: 20, self.groups[0].members[3]: 10, self.groups[0].members[4]: 70 }))
-        self.groups[0].add_expense(Expense("Entertainment", 120, "Entertainment", self.groups[0].members[3], "Equals", { self.groups[0].members[0]: 24, self.groups[0].members[1]: 24, self.groups[0].members[2]: 24, self.groups[0].members[3]: 24, self.groups[0].members[4]: 24 }))
-        self.groups[0].add_expense(Expense("Utilities", 80, "Utilities", self.groups[0].members[4], "Equals", { self.groups[0].members[0]: 16, self.groups[0].members[1]: 16, self.groups[0].members[2]: 16, self.groups[0].members[3]: 16, self.groups[0].members[4]: 16 }))
-        # Temp
 
         self.current_group: Optional[Group] = None
 

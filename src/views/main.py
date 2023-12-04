@@ -8,12 +8,14 @@ from .create_group import CreateGroupView
 from .group import GroupView
 from .history import HistoryView
 
+
 class Frames(TypedDict):
     home: HomeView
     create_expense: CreateExpenseView
     create_group: CreateGroupView
     group: GroupView
     history: HistoryView
+
 
 class View:
     def __init__(self):

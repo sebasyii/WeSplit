@@ -38,7 +38,7 @@ class HomeController:
         if selected:
             return list(self.model.groups.keys())[selected[0]]
         return None
-    
+
     def _enable_group_modification_btn(self):
         self.frame.select_grp_btn.config(state="normal")
         self.frame.leave_grp_btn.config(state="normal")

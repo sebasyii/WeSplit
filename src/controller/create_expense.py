@@ -72,9 +72,9 @@ class CreateExpenseController:
 
         if split_data is None:
             return
-        
+
         split_details, new_amount = split_data
-        
+
         new_expense = Expense(description, new_amount, category, paid_by, split_type, split_details)
 
         # Print all the new expense details
@@ -93,7 +93,9 @@ class CreateExpenseController:
         self.model.trigger_event("created_expense")
         self.view.switch("group")
 
-    def _validate_expense_input(self, amount: Decimal, description: str, paid_by: Optional[User], split_type: str) -> bool:
+    def _validate_expense_input(
+        self, amount: Decimal, description: str, paid_by: Optional[User], split_type: str
+    ) -> bool:
         if not amount or not description or not split_type or not paid_by:
             messagebox.showerror(title="Error", message="Please fill all fields.")
             return False
@@ -143,7 +145,7 @@ class CreateExpenseController:
             for member, (_, var) in zip(self.model.current_group.members.values(), self.temp_checkboxes):
                 if var.get():
                     split_details[member] = splits.pop(0)
-            
+
             if new_amount != sum(split_details.values()):
                 messagebox.showerror(title="Error", message="Total input amount does not match the total amount.")
                 return
@@ -160,15 +162,17 @@ class CreateExpenseController:
                         member_amount = Decimal(entry.get())
                         if member_amount < 0 or member_amount != round(member_amount, 2):
                             raise ValueError
-                        
-                        new_member_amount = self._calculate_new_amount(member_amount, service_charge, gst, rounding=ROUND_DOWN)
+
+                        new_member_amount = self._calculate_new_amount(
+                            member_amount, service_charge, gst, rounding=ROUND_DOWN
+                        )
                         print(new_member_amount)
                         total_input_amount += new_member_amount
                         split_details[member] = new_member_amount
                     except ValueError:
                         messagebox.showerror(title="Error", message="Invalid amount for " + member.name)
                         return
-                    
+
             split_details, total_input_amount = self._match_amount(new_amount, total_input_amount, split_details)
 
             print(f"The split details are: {split_details}")
@@ -176,7 +180,7 @@ class CreateExpenseController:
                 print(f"Total input amount: {total_input_amount}, New amount: {new_amount}")
                 messagebox.showerror(title="Error", message="Total input amount does not match the total amount.")
                 return
-            
+
         elif split_type == "Percentages":
             total_percentage = 0
             total_input_amount = 0
@@ -200,9 +204,13 @@ class CreateExpenseController:
                         member_amount = ((member_percentage / 100) * amount).quantize(
                             Decimal(".01"), rounding=ROUND_DOWN
                         )
-                        total_input_amount += self._calculate_new_amount(member_amount, service_charge, gst, rounding=ROUND_DOWN)
+                        total_input_amount += self._calculate_new_amount(
+                            member_amount, service_charge, gst, rounding=ROUND_DOWN
+                        )
 
-                        split_details[member] = self._calculate_new_amount(member_amount, service_charge, gst, rounding=ROUND_DOWN)
+                        split_details[member] = self._calculate_new_amount(
+                            member_amount, service_charge, gst, rounding=ROUND_DOWN
+                        )
                     except ValueError:
                         messagebox.showerror(title="Error", message="Invalid percentage for " + member.name)
                         return
@@ -225,7 +233,7 @@ class CreateExpenseController:
         if gst:
             amount *= Decimal("1.08")
         return amount.quantize(Decimal(".01"), rounding=rounding)
-    
+
     def _match_amount(self, amount: Decimal, total_input_amount: Decimal, split_details: Dict[User, Decimal]) -> bool:
         new_dict = copy.deepcopy(split_details)
         remainder = amount - total_input_amount
@@ -239,9 +247,9 @@ class CreateExpenseController:
 
             total_input_amount += Decimal(".01")
 
-        new_dict[list(new_dict.keys())[temp_idx]] = (
-            new_dict[list(new_dict.keys())[temp_idx]] + remainder
-        ).quantize(Decimal(".01"), rounding=ROUND_UP)
+        new_dict[list(new_dict.keys())[temp_idx]] = (new_dict[list(new_dict.keys())[temp_idx]] + remainder).quantize(
+            Decimal(".01"), rounding=ROUND_UP
+        )
 
         return new_dict, total_input_amount
 

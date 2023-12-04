@@ -1,10 +1,8 @@
 from collections import defaultdict
-import copy
 from decimal import Decimal
 from typing import Dict, List, Tuple
 from .expense import Expense
 from .user import User
-from .base import ObservableModel
 
 
 class Group:
@@ -67,6 +65,7 @@ class Group:
         except ValueError as e:
             raise ValueError("Expense not found in the list.") from e
 
+    # Ref: https://github.com/nishasinha/Splitwise-Python
     def calculate_min_transfers(self) -> List[Tuple[int, int, Decimal]]:
         balance = self._calculate_balances()
 

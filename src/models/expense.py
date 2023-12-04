@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Dict, Union
+from typing import Dict
 from enum import Enum, auto
 
 from .user import User
@@ -44,7 +44,7 @@ class Expense:
     @property
     def amount(self) -> Decimal:
         return self._amount
-    
+
     @property
     def category(self) -> str:
         return self._category

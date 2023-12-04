@@ -29,7 +29,18 @@ class CreateExpenseView(BaseView):
         self.category_label = ttk.Label(self, text="Category")
         self.category_label.grid(row=3, column=0, sticky="ew", padx=20, pady=1)
         self.category_combobox = ttk.Combobox(self, state="readonly")
-        self.category_combobox["values"] = ("Food and Drinks", "Transportation", "Entertainment", "Utilities", "Accommodation", "Activity Fees", "Tips and Gratuities", "Car Rental", "Shopping", "Others")
+        self.category_combobox["values"] = (
+            "Food and Drinks",
+            "Transportation",
+            "Entertainment",
+            "Utilities",
+            "Accommodation",
+            "Activity Fees",
+            "Tips and Gratuities",
+            "Car Rental",
+            "Shopping",
+            "Others",
+        )
         self.category_combobox.grid(row=3, column=1, sticky="ew", padx=20, pady=1)
 
         self.split_type_label = ttk.Label(self, text="Split Type")

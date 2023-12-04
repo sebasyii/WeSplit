@@ -1,10 +1,5 @@
-from decimal import ROUND_DOWN, ROUND_UP, Decimal
-from tkinter import BooleanVar, messagebox, ttk
-from typing import Optional
 from views.main import View
 from models.main import Model
-from models.expense import Expense
-from models.user import User
 
 
 class HistoryController:
@@ -26,7 +21,9 @@ class HistoryController:
         self.frame.history_table.delete(*self.frame.history_table.get_children())
 
         for expense in self.model.current_group.expenses:
-            parent_id = self.frame.history_table.insert("", "end", text=expense.paid_by.name, values=("", expense.amount, expense.description, expense.category))
+            parent_id = self.frame.history_table.insert(
+                "", "end", text=expense.paid_by.name, values=("", expense.amount, expense.description, expense.category)
+            )
 
             for user, amount in expense.split_details.items():
                 self.frame.history_table.insert(parent_id, "end", text=user.name, values=(amount, ""))
