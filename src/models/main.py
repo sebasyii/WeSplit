@@ -1,5 +1,4 @@
 from typing import Optional
-from .user import User
 from .group import Group
 from .base import ObservableModel
 from .expense import Expense
@@ -8,7 +7,7 @@ from .expense import Expense
 class Model(ObservableModel):
     def __init__(self) -> None:
         super().__init__()
-
+        
         self.groups = {}
 
         self.current_group: Optional[Group] = None
