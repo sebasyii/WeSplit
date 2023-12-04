@@ -9,6 +9,8 @@ class Model(ObservableModel):
     def __init__(self) -> None:
         super().__init__()
 
+        self.groups = {}
+
         self.current_group: Optional[Group] = None
 
     def set_current_group(self, group_id: int) -> None:
